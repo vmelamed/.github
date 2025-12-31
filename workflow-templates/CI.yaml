@@ -22,37 +22,46 @@ on:
       preprocessor-symbols:
         description: Define semicolon-separated preprocessor symbols to pass to the compiler
         type: string
-        default: SHORT_RUN # *CP* semicolon-separated preprocessor symbols to pass to the compiler. Here it enables benchmarks short run mode for faster execution, but less precise results, acceptable for CI runs.
+        default: SHORT_RUN # *CP* semicolon-separated preprocessor symbols to pass to the compiler.
+        # Here it enables benchmarks short run mode for faster execution, but less precise results, acceptable for CI runs.
 
 env:
   # *CP* The project(s) to build as a JSON array of strings - path(s) to the project(s).
-  # An empty string means the root solution or project.
-  # Hint: list all projects that need to be built, including tests and benchmarks unless your solution/project file has them included already as references.
-  BUILD_PROJECTS: >-
-    [""]
+  # An empty string means to build the root solution and run all test and benchmark projects in it.
+  # Hint: unless your solution/project file has all necessary projects included explicitly or as references,
+  # list all projects that need to be built, including tests and benchmarks to ensure that the artifacts are cached and reused.
+  # Hint: to set the value as a valid JSON list of strings, useYAML folded style (>-), and double quotes around the strings, e.g.:
+  # BUILD_PROJECTS: >-
+  #   ["src/Project1/Project1.csproj", "src/Project2/Project2.csproj"]
+  BUILD_PROJECTS: ""
 
   # *CP* The test project(s) to run as a JSON array of strings - path(s) to the test project(s).
-  # The "__skip__" sentinel avoids empty-matrix expansion when no tests are requested. Not having tests is not typical and not desirable, but possible.
-  TEST_PROJECTS: >-
-    ["__skip__"]
+  # If not specified, no tests are requested. Not having tests is not typical and not desirable, but possible.
+  # Hint: to set the value as a valid JSON list of strings, useYAML folded style (>-), and double quotes around the strings, e.g.:
+  # TEST_PROJECTS: >-
+  #   ["tests/Project1.Tests/Project1.Tests.csproj", "tests/Project2.Tests/Project2.Tests.csproj"]
+  TEST_PROJECTS: ""
 
   # *CP* The benchmarks project(s) to run as a JSON array of strings - path(s) to the benchmark project(s).
-  # The "__skip__" sentinel avoids empty-matrix expansion when no benchmarks are requested.
-  BENCHMARK_PROJECTS: >-
-    ["__skip__"]
+  # If not specified, no benchmarks are requested.
+  # Hint: to set the value as a valid JSON list of strings, useYAML folded style (>-), and double quotes around the strings, e.g.:
+  # BENCHMARK_PROJECTS: >-
+  #   ["benchmarks/Project1.Benchmarks/Project1.Benchmarks.csproj"]
+  BENCHMARK_PROJECTS: ""
 
   # *CP* Semicolon-separated preprocessor symbols to pass to the compiler, e.g. SHORT_RUN (to enable benchmarks short run mode).
-  PREPROCESSOR_SYMBOLS: ""
+  PREPROCESSOR_SYMBOLS: "SHORT_RUN"
 
-  # *CP* The OS runner(s) to use as a JSON array of strings - e.g. "ubuntu-latest", "windows-latest", "macos-latest".
-  # This workload does not do any OS-specific operations, so a single OS is typically sufficient.
-  OS: >-
-    ["ubuntu-latest"]
+  # *CP* The OS runner(s) to use for building and testing as a JSON array of strings - e.g. "ubuntu-latest", "windows-latest", "macos-latest".
+  # Hint: to set the value as a valid JSON list of strings, useYAML folded style (>-), and double quotes around the strings, e.g.:
+  # OS: >-
+  #   ["ubuntu-latest", "windows-latest", "macos-latest"]
+  OS: ""
 
 jobs:
   get-params:
     name: Prepare the default and passed in parameters
-    runs-on: ubuntu-latest # here the runner doesn't matter - we're just preparing the inputs for the next workload.
+    runs-on: ubuntu-latest # in this workflow the runner doesn't matter - we're just preparing the inputs for the next workload(s).
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     env:
       # *CP* The following are invariant - no matter how we trigger the workflow, they should stay the same.
@@ -81,6 +90,10 @@ jobs:
           build_projects='${{ env.BUILD_PROJECTS }}'
           test_projects='${{ env.TEST_PROJECTS }}'
           benchmark_projects='${{ env.BENCHMARK_PROJECTS }}'
+          dotnet_version='${{ env.dotnet_version }}'
+          configuration='${{ env.configuration }}'
+          min_coverage_pct='${{ env.min_coverage_pct }}'
+          max_regression_pct='${{ env.max_regression_pct }}'
 
           if [ '${{ github.event_name }}' == "push" ]; then
               # Set the values for push events, and add SHORT_RUN to preprocessor_symbols for faster benchmark tests (less precise, yet acceptable for CI runs).
