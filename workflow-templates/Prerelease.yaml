@@ -101,6 +101,6 @@ jobs:
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       semver-build-prefix: ${{ needs.get-params.outputs.semver-build-prefix }}
       force-publish: ${{ fromJSON(needs.get-params.outputs.force-publish) }}
-      reason: ${{ inputs.reason || "" }}
+      reason: ${{ inputs.reason || '' }}
       nuget-server: ${{ needs.get-params.outputs.nuget-server }}
       save_package_artifacts: true
