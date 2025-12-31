@@ -1,0 +1,14 @@
+{
+    "name": "Release",
+    "description": "Continuous integration workflow template that publishes NuGet release packages upon tagging the 'main' branch with a version, e.g. 'v1.2.3'.",
+    "categories": [
+        "CI/CD",
+        "DevOps",
+        ".NET",
+        "push"
+    ],
+    "file-patterns": [
+        ".github/workflows/Release.yaml",
+        ".github/workflows/Release.yml"
+    ]
+}

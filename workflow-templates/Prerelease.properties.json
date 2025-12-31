@@ -1,0 +1,14 @@
+{
+    "name": "Prerelease",
+    "description": "Continuous integration workflow template that tags 'main' appropriately with a prerelease version, e.g. '1.2.3-preview.1', builds, packages, and publishes it to NuGet as a prerelease.",
+    "categories": [
+        "CI/CD",
+        "DevOps",
+        ".NET",
+        "pull-request"
+    ],
+    "file-patterns": [
+        ".github/workflows/Prerelease.yaml",
+        ".github/workflows/Prerelease.yml"
+    ]
+}

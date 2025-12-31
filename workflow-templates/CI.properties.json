@@ -1,6 +1,6 @@
 {
     "name": "CI",
-    "description": "Continuous Integration workflow template that invokes vmelamed/vm2.DevOps/.github/workflows/_ci.yml to build the project, run tests, and run benchmarks. Customize the projects to build/test/benchmark via workflow inputs, environment variables, and secrets.",
+    "description": "Continuous integration workflow template that invokes vmelamed/vm2.DevOps/.github/workflows/_ci.yml to build the project, run tests, and run benchmarks. Customize the projects to build/test/benchmark via workflow inputs, environment variables, and secrets.",
     "categories": [
         "CI/CD",
         "DevOps",
@@ -8,7 +8,7 @@
         "push"
     ],
     "file-patterns": [
-        ".github/workflows/[Cc][Ii].yaml",
-        ".github/workflows/[Cc][Ii].yml"
+        ".github/workflows/CI.yaml",
+        ".github/workflows/CI.yml"
     ]
 }

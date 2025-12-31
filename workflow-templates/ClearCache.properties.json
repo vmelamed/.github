@@ -1,0 +1,13 @@
+{
+    "name": "ClearCache",
+    "description": "Continuous Integration workflow template that clears manually all NuGet caches (for emergency use only!)",
+    "categories": [
+        "CI/CD",
+        "DevOps",
+        "cache"
+    ],
+    "file-patterns": [
+        ".github/workflows/ClearCache.yaml",
+        ".github/workflows/ClearCache.yml"
+    ]
+}
