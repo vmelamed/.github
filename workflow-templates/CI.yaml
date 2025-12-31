@@ -1,5 +1,5 @@
 name: "CI: Build, Run Tests, Run Benchmarks"
-# After creating pay attention to the comments starting with CP - these are "Customize Points" to adjust the workflow to your repo needs.
+# Comments marked with *CP* are "Customization Point"-s to adjust the workflow to your repo needs.
 
 on:
   push:
@@ -15,25 +15,39 @@ on:
       os:
         description: Runner OS (or multiple OS-es separate by comma, e.g. 'ubuntu-latest,windows-latest')
         type: string
-        default: ubuntu-latest  # CP. Adjust the default runner OS or OS-es as needed.
+        default: ubuntu-latest  # *CP* Adjust the default runner OS or OS-es as needed.
         # There is a known GitHub actions issue: the workflow dispatch UI doesn't properly handle JSON strings with quotes.
         # E.g. for the input '["ubuntu-latest"]', the UI removes the inner quotes and it becomes the invalid JSON: '[ubuntu-latest]'.
 
       preprocessor-symbols:
         description: Define semicolon-separated preprocessor symbols to pass to the compiler
         type: string
-        default: SHORT_RUN # CP. semicolon-separated preprocessor symbols to pass to the compiler. Here it enables benchmarks short run mode for faster execution, but less precise results, acceptable for CI runs.
+        default: SHORT_RUN # *CP* semicolon-separated preprocessor symbols to pass to the compiler. Here it enables benchmarks short run mode for faster execution, but less precise results, acceptable for CI runs.
 
 env:
-  BUILD_PROJECTS: >- # CP. The project(s) to build as a JSON array of strings - path(s) to the project(s). An empty string means the root solution or project. List all projects that need to be built, including tests and benchmarks.
+  # *CP* The project(s) to build as a JSON array of strings - path(s) to the project(s).
+  # An empty string means the root solution or project.
+  # Hint: list all projects that need to be built, including tests and benchmarks unless your solution/project file has them included already as references.
+  BUILD_PROJECTS: >-
     [""]
-  TEST_PROJECTS: >- # CP. The test project(s) to run as a JSON array of strings - path(s) to the test project(s). The "__skip__" sentinel avoids empty-matrix expansion when no tests are requested. Not having tests is not typical, but possible, although undesirable.
+
+  # *CP* The test project(s) to run as a JSON array of strings - path(s) to the test project(s).
+  # The "__skip__" sentinel avoids empty-matrix expansion when no tests are requested. Not having tests is not typical and not desirable, but possible.
+  TEST_PROJECTS: >-
     ["__skip__"]
-  BENCHMARK_PROJECTS: >- # CP. The benchmarks project(s) to run as a JSON array of strings - path(s) to the benchmark project(s). The "__skip__" sentinel avoids empty-matrix expansion when no benchmarks are requested.
+
+  # *CP* The benchmarks project(s) to run as a JSON array of strings - path(s) to the benchmark project(s).
+  # The "__skip__" sentinel avoids empty-matrix expansion when no benchmarks are requested.
+  BENCHMARK_PROJECTS: >-
     ["__skip__"]
+
+  # *CP* Semicolon-separated preprocessor symbols to pass to the compiler, e.g. SHORT_RUN (to enable benchmarks short run mode).
+  PREPROCESSOR_SYMBOLS: ""
+
+  # *CP* The OS runner(s) to use as a JSON array of strings - e.g. "ubuntu-latest", "windows-latest", "macos-latest".
+  # This workload does not do any OS-specific operations, so a single OS is typically sufficient.
   OS: >-
     ["ubuntu-latest"]
-  PREPROCESSOR_SYMBOLS: "" # CP. Semicolon-separated preprocessor symbols to pass to the compiler, e.g. SHORT_RUN (to enable benchmarks short run mode).
 
 jobs:
   get-params:
@@ -41,8 +55,9 @@ jobs:
     runs-on: ubuntu-latest # here the runner doesn't matter - we're just preparing the inputs for the next workload.
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     env:
-      # CP. The following are invariant - no matter how we trigger the workflow, they should stay the same. Consider moving them to repo variables and secrets,
-      # as they can be set at the org. or repository level. Also you can set permissions as well. Almost like a per-organization or per-repository policy.
+      # *CP* The following are invariant - no matter how we trigger the workflow, they should stay the same.
+      # Consider moving them to repo variables and secrets - they can be set at the org., environment, or repository level.
+      # Also you can set permissions on these as well. They'll behave almost like a per-organization or per-repository policy.
       dotnet_version: ${{ vars.DOTNET_VERSION }}          # e.g. '10.0.x'
       configuration: ${{ vars.CONFIGURATION }}            # e.g. 'Release'
       min_coverage_pct: ${{ vars.MIN_COVERAGE_PCT }}      # e.g. '80'
@@ -70,7 +85,7 @@ jobs:
           if [ '${{ github.event_name }}' == "push" ]; then
               # Set the values for push events, and add SHORT_RUN to preprocessor_symbols for faster benchmark tests (less precise, yet acceptable for CI runs).
               os='${{ env.OS }}'
-              preprocessor_symbols='SHORT_RUN;${{ env.PREPROCESSOR_SYMBOLS }}' # CP. Adjust as needed.
+              preprocessor_symbols='SHORT_RUN;${{ env.PREPROCESSOR_SYMBOLS }}' # *CP* Adjust as needed.
           elif [ '${{ github.event_name }}' == "pull_request" ]; then
               # Set the values for pull_request events
               os='${{ env.OS }}'
@@ -104,8 +119,8 @@ jobs:
     needs:
       - get-params
     secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} # CP. if the repo has tests and codecov is enabled, otherwise - delete this line
-      BENCHER_API_TOKEN: ${{ secrets.BENCHER_API_TOKEN }} # CP. if the repo has benchmarks and Bencher is used, otherwise - delete this line
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} # *CP* if the repo has tests and codecov is enabled, otherwise - delete this line
+      BENCHER_API_TOKEN: ${{ secrets.BENCHER_API_TOKEN }} # *CP* if the repo has benchmarks and Bencher is used, otherwise - delete this line
     permissions:
       contents: read
       pull-requests: write # Required to comment on PRs
