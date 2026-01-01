@@ -1,5 +1,5 @@
 {
-    "name": "Prerelease",
+    "name": "Dependabot",
     "description": "Dependabot configuration for managing dependencies.",
     "categories": [
         "CI/CD",
