@@ -20,7 +20,6 @@ on:
           - rc1
           - rc2
           - rc3
-          - rc4
         default: preview
 
       reason:
