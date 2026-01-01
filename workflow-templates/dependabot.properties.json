@@ -1,0 +1,14 @@
+{
+    "name": "Prerelease",
+    "description": "Dependabot configuration for managing dependencies.",
+    "categories": [
+        "CI/CD",
+        "DevOps",
+        ".NET",
+        "dependabot"
+    ],
+    "file-patterns": [
+        ".github/dependabot.yml",
+        ".github/dependabot.yaml"
+    ]
+}
