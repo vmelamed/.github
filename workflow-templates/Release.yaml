@@ -36,7 +36,7 @@ jobs:
       ${{
       github.event_name == 'workflow_dispatch' ||
       !contains(github.ref_name,'-') &&
-      startsWith(github.ref, format('refs/tags/%s', vars.MINVER_TAG_PREFIX || 'v'))
+      startsWith(github.ref, format('refs/tags/%s', vars.MinVerTagPrefix || 'v'))
       }}
     outputs:
       package-projects: ${{ steps.init-params.outputs.package-projects }}
@@ -74,12 +74,15 @@ jobs:
   release:
     name: Release
     uses: vmelamed/vm2.DevOps/.github/workflows/_release.yaml@main
+    needs:
+      - get-params
     permissions:
       contents: write
       packages: write
     secrets:
-      NUGET_API_KEY: ${{ secrets.NUGET_API_GITHUB_KEY }}  # CP. the API key to use for publishing to GitHub NuGet packages or NuGet.org
-                                                          # Make sure it corresponds to the 'nuget-server' below
+      # CP. the API key to use for publishing to GitHub NuGet packages or NuGet.org
+      # Make sure it corresponds to the 'nuget-server' below
+      NUGET_API_KEY: ${{ secrets.NUGET_API_GITHUB_KEY }}
     with:
       package-projects: ${{ needs.get-params.outputs.package-projects }}
       dotnet-version: ${{ vars.DOTNET_VERSION }}
