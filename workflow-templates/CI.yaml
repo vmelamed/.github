@@ -50,8 +50,8 @@ env:
   #   ["benchmarks/Project1.Benchmarks/Project1.Benchmarks.csproj"]
   BENCHMARK_PROJECTS: ""
 
-  # *CP* Semicolon-separated preprocessor symbols to pass to the compiler, e.g. SHORT_RUN (to enable benchmarks short run mode).
-  PREPROCESSOR_SYMBOLS: "SHORT_RUN"
+  # *CP* Semicolon-separated preprocessor symbols to pass to the compiler.
+  PREPROCESSOR_SYMBOLS: ""
 
   # *CP* The OS runner(s) to use for building and testing as a JSON array of strings - e.g. "ubuntu-latest", "windows-latest", "macos-latest".
   # Hint: to set the value as a valid JSON list of strings, useYAML folded style (>-), and double quotes around the strings, e.g.:
