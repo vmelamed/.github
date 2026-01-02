@@ -1,4 +1,4 @@
-name: "CI: Build, Run Tests, Run Benchmarks"
+name: "CI: Build, Test, Benchmark"
 # Comments marked with *CP* are "Customization Point"-s to adjust the workflow to your repo needs.
 
 on:
@@ -22,7 +22,8 @@ on:
       preprocessor-symbols:
         description: Define semicolon-separated preprocessor symbols to pass to the compiler
         type: string
-        default: SHORT_RUN # *CP* semicolon-separated preprocessor symbols to pass to the compiler.
+        required: false
+        # *CP* semicolon-separated preprocessor symbols to pass to the compiler.
         # Here it enables benchmarks short run mode for faster execution, but less precise results, acceptable for CI runs.
 
 env:
@@ -131,11 +132,10 @@ jobs:
     uses: vmelamed/vm2.DevOps/.github/workflows/_ci.yaml@main
     needs:
       - get-params
-    secrets:
-      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }} # *CP* if the repo has tests and codecov is enabled, otherwise - delete this line
-      BENCHER_API_TOKEN: ${{ secrets.BENCHER_API_TOKEN }} # *CP* if the repo has benchmarks and Bencher is used, otherwise - delete this line
+    secrets: inherit
     permissions:
-      contents: read
+      contents: read # Required to checkout the code
+      packages: read # Required to restore GitHub Packages NuGet packages
       pull-requests: write # Required to comment on PRs
       checks: write # Required to create GitHub Checks
     with:
