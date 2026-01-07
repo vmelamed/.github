@@ -68,10 +68,10 @@ jobs:
       # *CP* The following are invariant - no matter how we trigger the workflow, they should stay the same.
       # Consider moving them to repo variables and secrets - they can be set at the org., environment, or repository level.
       # Also you can set permissions on these as well. They'll behave almost like a per-organization or per-repository policy.
-      dotnet_version: ${{ vars.DOTNET_VERSION }}          # e.g. '10.0.x'
+      dotnet-version: ${{ vars.DOTNET_VERSION }}          # e.g. '10.0.x'
       configuration: ${{ vars.CONFIGURATION }}            # e.g. 'Release'
-      min_coverage_pct: ${{ vars.MIN_COVERAGE_PCT }}      # e.g. '80'
-      max_regression_pct: ${{ vars.MAX_REGRESSION_PCT }}  # e.g. '20'
+      min-coverage-pct: ${{ vars.MIN_COVERAGE_PCT }}      # e.g. '80'
+      max-regression-pct: ${{ vars.MAX_REGRESSION_PCT }}  # e.g. '20'
     outputs:
       build-projects: ${{ steps.init-params.outputs.build-projects }}
       test-projects: ${{ steps.init-params.outputs.test-projects }}
@@ -91,10 +91,10 @@ jobs:
           build_projects='${{ env.BUILD_PROJECTS }}'
           test_projects='${{ env.TEST_PROJECTS }}'
           benchmark_projects='${{ env.BENCHMARK_PROJECTS }}'
-          dotnet_version='${{ env.dotnet_version }}'
+          dotnet_version='${{ env.dotnet-version }}'
           configuration='${{ env.configuration }}'
-          min_coverage_pct='${{ env.min_coverage_pct }}'
-          max_regression_pct='${{ env.max_regression_pct }}'
+          min_coverage_pct='${{ env.min-coverage-pct }}'
+          max_regression_pct='${{ env.max-regression-pct }}'
 
           if [ '${{ github.event_name }}' == "push" ]; then
               # Set the values for push events, and add SHORT_RUN to preprocessor_symbols for faster benchmark tests (less precise, yet acceptable for CI runs).
