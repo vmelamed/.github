@@ -13,20 +13,15 @@ on:
         required: true
         type: string
 
-      force-publish:
-        description: "Force publish"
-        type: boolean
-        default: false
-
 env:
-  # *CP* The projects to build and package as a JSON array of strings - path(s) to the project(s).
+  # *TODO* The projects to build and package as a JSON array of strings - path(s) to the project(s).
   # An empty string means to build and package the root solution's projects or the root project, marked with <IsPackable>true</IsPackable>.
   # Hint: to set the value as a valid JSON list of strings, use YAML folded style (>-), and double quotes around the strings, e.g.:
   # BUILD_PROJECTS: >-
   #   ["src/Project1/Project1.csproj", "src/Project2/Project2.csproj"]
   PACKAGE_PROJECTS: >-
     ["src/Project/Project.sln"]
-  # *CP* 'github' - GitHub Packages; 'nuget' - NuGet.org. Make sure the NUGET_API_KEY secret corresponds to the server selected here.
+  # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org. Make sure the NUGET_API_KEY secret corresponds to the server selected here.
   NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }}
 
 jobs:
@@ -42,7 +37,6 @@ jobs:
     outputs:
       package-projects: ${{ steps.init-params.outputs.package-projects }}
       nuget-server: ${{ steps.init-params.outputs.nuget-server }}
-      force-publish: ${{ steps.init-params.outputs.force-publish }}
     steps:
       - name: Gather parameters
         id: init-params
@@ -50,17 +44,11 @@ jobs:
         run: |
           package_projects='${{ env.PACKAGE_PROJECTS }}'
           nuget_server='${{ env.NUGET_SERVER }}'
-          force_publish=false
-
-          if [ '${{ github.event_name }}' == "workflow_dispatch" ]; then
-            force_publish='${{ inputs.force-publish }}'
-          fi
 
           # Set the outputs:
           {
-            echo "package-projects=${package_projects}"
-            echo "nuget-server=${nuget_server}"
-            echo "force-publish=${force_publish}"
+              echo "package-projects=${package_projects}"
+              echo "nuget-server=${nuget_server}"
           }  >> $GITHUB_OUTPUT
 
   log-trigger:
@@ -74,7 +62,7 @@ jobs:
           echo "::notice::Reason: ${{ inputs.reason }}"
 
   release:
-    name: Release - package and release NuGet release
+    name: Release - package and publish NuGet stable release
     needs:
       - get-params
     uses: vmelamed/vm2.DevOps/.github/workflows/_release.yaml@main
@@ -88,8 +76,8 @@ jobs:
       pull-requests: write # Required to comment on PRs
       checks: write # Required to create GitHub Checks
     with:
-      package-projects: ${{ needs.get-params.outputs.package-projects }}
       dotnet-version: ${{ vars.DOTNET_VERSION }}
-      force-publish: ${{ fromJSON(needs.get-params.outputs.force-publish) }}
+      package-projects: ${{ needs.get-params.outputs.package-projects }}
       nuget-server: ${{ needs.get-params.outputs.nuget-server }}
-      save-package-artifacts: true
+      reason: ${{ inputs.reason || '' }}
+      save-package-artifacts: false
