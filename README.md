@@ -14,7 +14,7 @@ This repository hosts organization-level workflow templates used across vm2 proj
 ## Usage
 
 - Instantiate workflow templates from this repository in consuming repos using GitHub Actions UI (Actions tab → New workflow → Set up a workflow yourself → Choose "Use a workflow from another repository") and specify this repository as the source.
-- Adjust Customization Points marked with `*CP*` inside each template.
+- Adjust Customization Points marked with `*TODO*` inside each template.
 
 ## Support
 

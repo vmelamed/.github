@@ -15,7 +15,7 @@ on:
       os:
         description: Runner OS (or multiple OS-es separate by comma, e.g. 'ubuntu-latest,windows-latest')
         type: string
-        default: ubuntu-latest  # *TODO* Adjust the default runner OS or OS-es as needed.
+        default: ubuntu-latest # *TODO* Adjust the default runner OS or OS-es as needed.
         # There is a known GitHub actions issue: the workflow dispatch UI doesn't properly handle JSON strings with quotes.
         # E.g. for the input '["ubuntu-latest"]', the UI removes the inner quotes and it becomes the invalid JSON: '[ubuntu-latest]'.
 
@@ -23,7 +23,7 @@ on:
         description: Define semicolon-separated preprocessor symbols to pass to the compiler
         type: string
         required: false
-        default: ''
+        default: ""
         # *TODO* semicolon-separated preprocessor symbols to pass to the compiler.
         # E.g. `SHORT_RUN` enables benchmarks short run mode for faster execution.
 
@@ -34,7 +34,7 @@ env:
   # list all projects that need to be built, including tests and benchmarks to ensure that the artifacts are cached and reused.
   # Hint: to set the value as a valid JSON list of strings, use YAML folded style (>-), and double quotes around the strings:
   BUILD_PROJECTS: >-
-    ["src/Project/Project.sln"]
+    ["src/Project/Project.slnx"]
 
   # *TODO* The test project(s) to run as a JSON array of strings - path(s) to the test project(s).
   # If not specified, no tests are requested. Not having tests is not typical and not desirable, but possible.
@@ -63,12 +63,12 @@ jobs:
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     env:
       # *TODO* The following are invariant - no matter how we trigger the workflow, they should stay the same.
-      # Consider moving them to repo variables and secrets - they can be set at the org., environment, or repository level.
+      # Consider moving them to repo variables and/or secrets - they can be set at the org., environment, or repository level.
       # Also you can set permissions on these as well. They'll behave almost like a per-organization or per-repository policy.
-      dotnet-version: ${{ vars.DOTNET_VERSION }}          # e.g. '10.0.x'
-      configuration: ${{ vars.CONFIGURATION }}            # e.g. 'Release'
-      min-coverage-pct: ${{ vars.MIN_COVERAGE_PCT }}      # e.g. '80'
-      max-regression-pct: ${{ vars.MAX_REGRESSION_PCT }}  # e.g. '20'
+      dotnet-version: ${{ vars.DOTNET_VERSION }}
+      configuration: ${{ vars.CONFIGURATION }}
+      min-coverage-pct: ${{ vars.MIN_COVERAGE_PCT }}
+      max-regression-pct: ${{ vars.MAX_REGRESSION_PCT }}
     outputs:
       build-projects: ${{ steps.init-params.outputs.build-projects }}
       test-projects: ${{ steps.init-params.outputs.test-projects }}
