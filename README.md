@@ -1,10 +1,10 @@
 # .github Shared Workflows
 
-This repository hosts organization-level workflow templates used across vm2 projects.
+This repository hosts organization-level workflow templates used across the `vm2` projects.
 
 ## Contents
 
-- `workflow-templates/` – reusable CI/CD workflows,  consumed by downstream repositories:
+- `workflow-templates/` – reusable CI/CD workflows, consumed by downstream repositories:
   - CI - Continuous Integration: build, test, and benchmarks. Triggered on pull requests and pushes to main
   - Prerelease - Pre-release workflow: prerelease tagging and versioning, changelog, NuGet packaging, and publishing pre-release versions. Triggered on pull requests to main or on manual dispatch
   - Release - Release workflow: changelog, NuGet packaging, and publishing release versions. Triggered on manual tagging with a release version, e.g. v1.2.3 of main or on manual dispatch
