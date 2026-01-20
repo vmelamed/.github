@@ -52,7 +52,7 @@ jobs:
           dotnet_version='${{ vars.DOTNET_VERSION }}'
           minver_tag_prefix='${{ vars.MINVERTAGPREFIX || 'v' }}'
           minver_prerelease_id='${{ vars.MINVERDEFAULTPRERELEASEIDENTIFIERS || 'preview.0' }}'
-          reason=$(printf "%s %s" "$minver_prerelease_id" "pre-release (PR to main)")
+          reason="$minver_prerelease_id pre-release (PR to main)"
           save_package_artifacts='${{ vars.SAVE_PACKAGE_ARTIFACTS || 'false' }}'
 
           if [ '${{ github.event_name }}' == "workflow_dispatch" ]; then
