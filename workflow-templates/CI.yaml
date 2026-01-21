@@ -1,5 +1,6 @@
+# Comments marked with *TODO* are the customization points where you should adjust the text of this workflow template to the
+# needs of your your repo.
 name: "CI: Build, Test, Benchmark"
-# Comments marked with *TODO* are "Customization Point"-s to adjust the workflow to your repo needs.
 
 on:
   push:
@@ -16,37 +17,37 @@ on:
         description: Runner OS (or multiple OS-es separate by comma, e.g. 'ubuntu-latest,windows-latest')
         type: string
         default: ubuntu-latest # *TODO* Adjust the default runner OS or OS-es as needed.
-        # There is a known GitHub actions issue: the workflow dispatch UI doesn't properly handle JSON strings with quotes.
-        # E.g. for the input '["ubuntu-latest"]', the UI removes the inner quotes and it becomes the invalid JSON: '[ubuntu-latest]'.
+        # Note: there is a known GitHub actions issue: the workflow dispatch UI doesn't properly handle JSON strings with quotes -
+        # it removes the quotes. E.g. entering '["ubuntu-latest"]' in the UI prompt removes the inner quotes and it becomes the
+        # invalid JSON: '[ubuntu-latest]'.
 
       preprocessor-symbols:
         description: Define semicolon-separated preprocessor symbols to pass to the compiler
         type: string
         required: false
-        default: ""
-        # *TODO* semicolon-separated preprocessor symbols to pass to the compiler.
-        # E.g. `SHORT_RUN` enables benchmarks short run mode for faster execution.
+        default: "" # *TODO* semicolon-separated preprocessor symbols to pass to the compiler.
 
 env:
-  # *TODO* The source project(s) to build. Must be specified as a string representing a JSON array of strings - path(s) to the project(s).
-  # An empty string means to build the root solution or the project in src/.
+  # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to
+  # the project(s).
+  # Note the yaml folding indicator `>-`. It allows to enter single line, scalar, string values on multiple lines, which might
+  # be more readable, and writable (no escaping etc.).
+
+  # If not specified, the default is the root solution or the project in src/.
+  # *TODO* The source code project(s) to build. JSON array of path(s) to the project(s).
   BUILD_PROJECTS: >-
     ["src/Project/Project.slnx"]
 
-  # *TODO* The test project(s) to build and run. Must be specified as a string representing a JSON array of strings - path(s) to the project(s).
-  # If not specified, no tests will be built or run. Not having tests is not typical and not desirable, but possible.
-  TEST_PROJECTS: ""
+  # If not specified, no tests will be built or run. Not having tests is not typical and not desirable, but on rare occasions - possible.
+  TEST_PROJECTS: "" # *TODO* The test project(s) to build and run. JSON array of path(s) to the test project(s).
 
-  # *TODO* The benchmarks project(s) to build and run. Must be specified as a string representing a JSON array of strings - path(s) to the project(s).
-  # If not specified, no benchmarks will be built or run.
-  BENCHMARK_PROJECTS: ""
+  BENCHMARK_PROJECTS: "" # *TODO* The benchmark project(s) to build and run. JSON array of path(s) to the benchmark project(s).
 
-  # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
-  PREPROCESSOR_SYMBOLS: ""
+  PREPROCESSOR_SYMBOLS: "" # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
 
-  # *TODO* The OS-es of the runner(s) to use for building and testing. Must be specified as a string representing a JSON array of strings.
   # If not specified, the default is ["ubuntu-latest"].
-  OS: >-
+  OS:
+    >- # *TODO* The OS-es of the runner(s) to use for building and testing. JSON array of OS-es.
     ["ubuntu-latest"]
 
 jobs:
@@ -55,7 +56,9 @@ jobs:
     runs-on: ubuntu-latest # in this workflow the runner doesn't matter - we're just preparing the inputs for the next workload(s).
     if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[skip ci]') }}
     env:
-      # *TODO* The following are invariant - no matter how we trigger the workflow, they should stay the same.
+      # *TODO* The following environment variables should be invariant - their values should not depend on what, when, where,
+      # and why the workflow was triggered. The best place to set these invariant values is in repository/environment/company
+      # variables. These are policies of your repo/environment/company, not of this workflow template.
       dotnet-version: ${{ vars.DOTNET_VERSION }}
       configuration: ${{ vars.CONFIGURATION }}
       min-coverage-pct: ${{ vars.MIN_COVERAGE_PCT }}
@@ -93,7 +96,6 @@ jobs:
           if [ '${{ github.event_name }}' == "push" ]; then
               # Set the values for push events, and add SHORT_RUN to preprocessor_symbols for faster benchmark tests (less precise, yet acceptable for CI runs).
               os='${{ env.OS }}'
-              # *TODO* Adjust as needed.
               preprocessor_symbols='SHORT_RUN;${{ env.PREPROCESSOR_SYMBOLS }}'
           elif [ '${{ github.event_name }}' == "pull_request" ]; then
               # Set the values for pull_request events

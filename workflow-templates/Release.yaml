@@ -1,5 +1,6 @@
+# Comments marked with *TODO* are the customization points where you should adjust the text of this workflow template to the
+# needs of your your repo.
 name: Publish NuGet Release
-# After creating pay attention to the comments starting with TODO - these are "Customize Points" to adjust the workflow to your repo needs.
 
 on:
   push:
@@ -14,12 +15,18 @@ on:
         type: string
 
 env:
-  # *TODO* The projects to build and package. Must be specified as a string representing a JSON array of strings - path(s) to the project(s).
-  # An empty string means to build and package the root solution's projects or the root project, that are marked with <IsPackable>true</IsPackable>.
+  # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to the
+  # project(s).
+  # Note the yaml folding indicator `>-`. It allows to enter single line, scalar, string values on multiple lines, which might
+  # be more readable, and writable (no escaping etc.).
+
+  # If not specified, the default is the root solution or the project in src/.
+  # *TODO* The source code project(s) to build, package, and release as a stable release. JSON array of path(s) to the project(s).
   PACKAGE_PROJECTS: >-
-    ["src/Project/Project.sln"]
-  # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org. Make sure the NUGET_API_KEY secret corresponds to the server selected here.
-  NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }}
+    ["src/Project/Project.slnx"]
+
+  # Ensure the NUGET_API_*KEY secret below corresponds to the server selected here.
+  NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }} # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org; URI - others.
 
 jobs:
   get-params:
@@ -47,7 +54,7 @@ jobs:
           nuget_server='${{ env.NUGET_SERVER }}'
           dotnet_version='${{ vars.DOTNET_VERSION }}'
           minver_tag_prefix='${{ vars.MINVERTAGPREFIX || 'v' }}'
-          reason="Stable Release (main tagged release)"
+          reason="Stable Release (main was manually tagged with a release tag)"
           save_package_artifacts='${{ vars.SAVE_PACKAGE_ARTIFACTS || 'false' }}'
 
           if [ '${{ github.event_name }}' == "workflow_dispatch" ]; then
@@ -80,7 +87,8 @@ jobs:
       - get-params
     uses: vmelamed/vm2.DevOps/.github/workflows/_release.yaml@main
     secrets:
-      # You don't need all three secrets, only the one corresponding to the chosen NuGet server in inputs.nuget-server or the default 'github'
+      # *TODO* The API key(s) for the NuGet server(s). You don't need all three secrets, only the one corresponding to the
+      # chosen NuGet server above or the default 'github'
       NUGET_API_GITHUB_KEY: ${{ secrets.NUGET_API_GITHUB_KEY }}
       NUGET_API_NUGET_KEY: ${{ secrets.NUGET_API_NUGET_KEY }}
       NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
