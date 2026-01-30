@@ -1,6 +1,6 @@
 # Comments marked with *TODO* are the customization points where you should adjust the text of this workflow template to the
 # needs of your your repo.
-name: Publish NuGet Release
+name: Publish NuGet Stable Release
 
 on:
   push:
