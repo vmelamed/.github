@@ -14,6 +14,7 @@ on:
   pull_request_review:
     types:
       - submitted # trigger after code reviews (including Copilot)
+                  # jobs further restrict to approved reviews via `if: github.event.review.state == 'approved'`.
 
   workflow_dispatch:
     inputs:
