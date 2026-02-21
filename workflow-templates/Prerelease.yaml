@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
     inputs:
       minver-prerelease-id:
-        description: "Prerelease prefix (e.g. preview.123, alpha, beta, rc1, etc.)"
+        description: "Prerelease prefix (e.g. preview.0, alpha, beta, rc1, etc.)"
         type: string
         required: true
         default: preview.0
