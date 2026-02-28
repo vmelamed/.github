@@ -73,8 +73,9 @@ jobs:
           source $DEVOPS_LIB_DIR/gh_core.sh
 
           dotnet_version='${{ env.DOTNET_VERSION }}'
-          package_projects='${{ env.PACKAGE_PROJECTS }}'
-          package_projects_len=$(is_safe_json_array "package_projects" "$defaultPackageProjects" is_safe_existing_file)
+
+          package_projects=$(is_safe_json_array '${{ env.PACKAGE_PROJECTS }}' '[]' is_safe_existing_file)
+          package_projects_len=$(jq length <<< "$package_projects")
           preprocessor_symbols='${{ env.PREPROCESSOR_SYMBOLS }}'
           minver_tag_prefix='${{ env.MINVERTAGPREFIX || 'v' }}'
           minver_prerelease_id='${{ env.MINVERDEFAULTPRERELEASEIDENTIFIERS || 'preview.0' }}'
@@ -87,7 +88,7 @@ jobs:
               reason='${{ inputs.reason }}'
           fi
 
-          args_to_github_output \
+          args_to_github_output \``
               package-projects \
               package-projects-len \
               dotnet-version \
@@ -96,7 +97,7 @@ jobs:
               minver-prerelease-id \
               reason \
               nuget-server \
-              save-package-artifacs
+              save-package-artifacts
 
   log-trigger:
     name: Log manual trigger reason
