@@ -34,10 +34,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to
-  # the project(s).
-  # Note the yaml folding indicator `>-`. It allows to enter single value (scalar, array, object, long string) values on
-  # multiple text lines with no need for escaping, which might be more readable, and writable.
+  # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to the project(s).
+  # Note the yaml folding indicator `>-`. It allows to enter single value (scalar, array, object, long string) values on multiple
+  # text lines with no need for escaping, which might be more readable, and writable.
 
   # If not specified or empty, no actual building will be run (e.g. template projects).
   # *TODO* The source code project(s) or solution(s) to build. Must be a JSON array of strings containing path(s) to the buildable project(s) or solution(s).

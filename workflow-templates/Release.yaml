@@ -5,8 +5,6 @@ name: Publish NuGet Stable Release
 on:
   # we release from main only, on manual trigger only
   workflow_dispatch:
-    branches:
-      - main
     inputs:
       reason:
         description: "Reason for manual release (do not enter: ; | & $ ` \\ < > ( ) { } new-line )"

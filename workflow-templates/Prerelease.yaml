@@ -13,8 +13,6 @@ on:
 
   # we pre-release from main only, on manual trigger only
   workflow_dispatch:
-    branches:
-      - main
     inputs:
       minver-prerelease-id:
         description: "Prerelease prefix (e.g. preview.0, alpha, beta, rc1, etc.)"
@@ -23,7 +21,7 @@ on:
         default: preview.0
 
       reason:
-        description: "Reason for manual pre-release (donot enter: ; | & $ ` \\ < > ( ) { } new-line )"
+        description: "Reason for manual pre-release (do not enter: ; | & $ ` \\ < > ( ) { } new-line )"
         required: true
         type: string
 
