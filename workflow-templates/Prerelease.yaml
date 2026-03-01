@@ -1,16 +1,20 @@
 # Comments marked with *TODO* are the customization points where you should adjust the text of this workflow template to the
-# needs of your your repo.
+# needs of your concrete repo.
 name: Publish NuGet Pre-Release
 
 on:
   workflow_run:
-    workflows: ["CI: Build, Test, Benchmark, Pack"]
-    types:
-      - completed
     branches:
       - main # trigger after CI completes for pushes to main (PR merges only, verified by pull_requests check)
+    workflows:
+      - "CI: Build, Test, Benchmark, Pack"
+    types:
+      - completed
 
+  # we pre-release from main only, on manual trigger only
   workflow_dispatch:
+    branches:
+      - main
     inputs:
       minver-prerelease-id:
         description: "Prerelease prefix (e.g. preview.0, alpha, beta, rc1, etc.)"
@@ -19,15 +23,14 @@ on:
         default: preview.0
 
       reason:
-        description: "Reason for manual pre-release (not allowed symbols: ; | & $ ` \\ < > ( ) { } new-line )"
+        description: "Reason for manual pre-release (donot enter: ; | & $ ` \\ < > ( ) { } new-line )"
         required: true
         type: string
 
 env:
-  # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to the
-  # project(s).
-  # Note the yaml folding indicator `>-`. It allows to enter single line, scalar, string values on multiple lines, which might
-  # be more readable, and writable (no escaping etc.).
+  # The value of the PACKAGE_PROJECTS variable must be a string containing a JSON array of strings - path(s) to the project(s).
+  # Hint: the yaml folding indicator `>-` lets you enter single line, scalar, string values on multiple lines, which might
+  # be more readable, and writable - no need for escaping.
 
   # If not specified or empty, no projects will be packed for prerelease delivery.
   # *TODO* The project(s) to pack for prerelease delivery. Must be a JSON array of strings containing path(s) to the packable project(s).
@@ -36,8 +39,12 @@ env:
     "src/Project/Project.csproj"
     ]
 
-  PREPROCESSOR_SYMBOLS: "" # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
-  NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }} # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org; URI - others. Ensure the NUGET_API_*KEY secrets corresponds to the server selected here.
+  # Ensure the NUGET_API_*KEY secrets corresponds to the server selected here.
+  # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org; URI - others.
+  NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }}
+  # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
+  PREPROCESSOR_SYMBOLS: ""
+
   CONFIGURATION: ${{ vars.CONFIGURATION || 'Release' }} # The build configuration: Debug, Release, etc.
   DOTNET_VERSION: ${{ vars.DOTNET_VERSION || '10.0.x' }} # The .NET SDK version to use.
   MINVERTAGPREFIX: ${{ vars.MINVERTAGPREFIX || 'v' }} # The MinVer tag prefix.
@@ -56,25 +63,32 @@ jobs:
         github.event.workflow_run.conclusion == 'success' &&
         !contains(github.event.workflow_run.head_commit.message, '[skip ci]') )
     outputs:
-      dotnet-version: ${{ steps.init-params.outputs.dotnet-version }}
-      package-projects: ${{ steps.init-params.outputs.package-projects }}
-      package-projects-len: ${{ steps.init-params.outputs.package-projects-len }}
-      preprocessor-symbols: ${{ steps.init-params.outputs.preprocessor-symbols }}
-      minver-tag-prefix: ${{ steps.init-params.outputs.minver-tag-prefix }}
-      minver-prerelease-id: ${{ steps.init-params.outputs.minver-prerelease-id }}
-      reason: ${{ steps.init-params.outputs.reason }}
-      nuget-server: ${{ steps.init-params.outputs.nuget-server }}
-      save-package-artifacts: ${{ steps.init-params.outputs.save-package-artifacts }}
+      dotnet-version: ${{ steps.gather-params.outputs.dotnet-version }}
+      package-projects: ${{ steps.gather-params.outputs.package-projects }}
+      package-projects-len: ${{ steps.gather-params.outputs.package-projects-len }}
+      preprocessor-symbols: ${{ steps.gather-params.outputs.preprocessor-symbols }}
+      minver-tag-prefix: ${{ steps.gather-params.outputs.minver-tag-prefix }}
+      minver-prerelease-id: ${{ steps.gather-params.outputs.minver-prerelease-id }}
+      reason: ${{ steps.gather-params.outputs.reason }}
+      nuget-server: ${{ steps.gather-params.outputs.nuget-server }}
+      save-package-artifacts: ${{ steps.gather-params.outputs.save-package-artifacts }}
     steps:
-      - name: Gather parameters
-        id: init-params
+      - name: Setup DevOps environment variables
+        id: setup-env
+        uses: vmelamed/vm2.DevOps/.github/actions/setup-env@main
+
+      - name: Setup the latest jq
+        id: setup-jq
+        uses: vmelamed/vm2.DevOps/.github/actions/setup-jq@main
+
+      - name: Gather argument values depending on the event
+        id: gather-params
         shell: bash
         run: |
           source $DEVOPS_LIB_DIR/gh_core.sh
 
           dotnet_version='${{ env.DOTNET_VERSION }}'
-
-          package_projects=$(is_safe_json_array '${{ env.PACKAGE_PROJECTS }}' '[]' is_safe_existing_file)
+          package_projects=issafe_json_array '${{ env.PACKAGE_PROJECTS }}' '[]' is_safe_existing_file
           package_projects_len=$(jq length <<< "$package_projects")
           preprocessor_symbols='${{ env.PREPROCESSOR_SYMBOLS }}'
           minver_tag_prefix='${{ env.MINVERTAGPREFIX || 'v' }}'
@@ -84,20 +98,23 @@ jobs:
           reason="Pre-release: PR approved, tagged with pre-release tag."
 
           if [ '${{ github.event_name }}' == "workflow_dispatch" ]; then
+              # For UI manually triggered runs (workflow_dispatch event), use the arg. values from env: vars, secrets, defaults
+              # and override with the inputs from the UI:
+
               minver_prerelease_id='${{ inputs.minver-prerelease-id }}'
               reason='${{ inputs.reason }}'
           fi
 
-          args_to_github_output \``
-              package-projects \
-              package-projects-len \
-              dotnet-version \
-              preprocessor-symbols \
-              minver-tag-prefix \
-              minver-prerelease-id \
+          args_to_github_output \
+              package_projects \
+              package_projects_len \
+              dotnet_version \
+              preprocessor_symbols \
+              minver_tag_prefix \
+              minver_prerelease_id \
               reason \
-              nuget-server \
-              save-package-artifacts
+              nuget_server \
+              save_package_artifacts
 
   log-trigger:
     name: Log manual trigger reason
@@ -116,8 +133,8 @@ jobs:
     uses: vmelamed/vm2.DevOps/.github/workflows/_prerelease.yaml@main
     secrets:
       RELEASE_PAT: ${{ secrets.RELEASE_PAT }} # Required PAT for pushing changelog and tags past branch protection.
-      # *TODO* Make sure to set the API key(s) for the NuGet server(s).
       # You don't need all of the next three secrets, only the one corresponding to the chosen NuGet server above or the default 'github'
+      # *TODO* Make sure to set the API key(s) for the NuGet server(s).
       NUGET_API_GITHUB_KEY: ${{ secrets.NUGET_API_GITHUB_KEY }}
       NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       NUGET_API_NUGET_KEY: ${{ secrets.NUGET_API_NUGET_KEY }}
