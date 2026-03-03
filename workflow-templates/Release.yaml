@@ -26,7 +26,6 @@ env:
   # Ensure the NUGET_API_*KEY secrets corresponds to the server selected here.
   # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org; URI - others.
   NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }}
-
   # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
   PREPROCESSOR_SYMBOLS: ""
 
