@@ -22,13 +22,11 @@ env:
     [
     "src/Project/Project.csproj"
     ]
-
   # Ensure the NUGET_API_*KEY secrets corresponds to the server selected here.
   # *TODO* 'github' - GitHub Packages; 'nuget' - NuGet.org; URI - others.
   NUGET_SERVER: ${{ vars.NUGET_SERVER || 'github' }}
   # *TODO* Semicolon-separated preprocessor symbols to pass to the compiler.
   PREPROCESSOR_SYMBOLS: ""
-
   CONFIGURATION: ${{ vars.CONFIGURATION || 'Release' }} # The build configuration: Debug, Release, etc.
   DOTNET_VERSION: ${{ vars.DOTNET_VERSION || '10.0.x' }} # The .NET SDK version to use.
   MINVERTAGPREFIX: ${{ vars.MINVERTAGPREFIX || 'v' }} # The MinVer tag prefix.
@@ -52,6 +50,9 @@ jobs:
       nuget-server: ${{ steps.gather-params.outputs.nuget-server }}
       save-package-artifacts: ${{ steps.gather-params.outputs.save-package-artifacts }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
       - name: Setup DevOps environment variables
         id: setup-env
         uses: vmelamed/vm2.DevOps/.github/actions/setup-env@main
