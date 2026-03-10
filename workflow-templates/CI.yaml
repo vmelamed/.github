@@ -119,19 +119,19 @@ jobs:
         run: |
           source $DEVOPS_LIB_DIR/gh_core.sh
 
-          build_projects='${{ env.BUILD_PROJECTS || "" }}'
-          test_projects='${{ env.TEST_PROJECTS || "" }}'
-          benchmark_projects='${{ env.BENCHMARK_PROJECTS || "" }}'
-          package_projects='${{ env.PACKAGE_PROJECTS || "" }}'
+          build_projects='${{ env.BUILD_PROJECTS || '' }}'
+          test_projects='${{ env.TEST_PROJECTS || '' }}'
+          benchmark_projects='${{ env.BENCHMARK_PROJECTS || '' }}'
+          package_projects='${{ env.PACKAGE_PROJECTS || '' }}'
           runners_os='${{ env.RUNNERS_OS || '["ubuntu-latest"]' }}'
-          dotnet_version='${{ env.DOTNET_VERSION || "10.0.x" }}'
-          configuration='${{ env.CONFIGURATION || "Release" }}'
-          preprocessor_symbols='${{ env.PREPROCESSOR_SYMBOLS || "" }}'
+          dotnet_version='${{ env.DOTNET_VERSION || '10.0.x' }}'
+          configuration='${{ env.CONFIGURATION || 'Release' }}'
+          preprocessor_symbols='${{ env.PREPROCESSOR_SYMBOLS || '' }}'
           min_coverage_pct='${{ env.MIN_COVERAGE_PCT || 80 }}'
           max_regression_pct='${{ env.MAX_REGRESSION_PCT || 20 }}'
-          minver_tag_prefix='${{ env.MINVERTAGPREFIX || "v" }}'
-          minver_prerelease_id='${{ env.MINVERDEFAULTPRERELEASEIDENTIFIERS || "preview.0" }}'
-          reset_benchmark_thresholds='${{ env.RESET_BENCHMARK_THRESHOLDS || "false" }}'
+          minver_tag_prefix='${{ env.MINVERTAGPREFIX || 'v' }}'
+          minver_prerelease_id='${{ env.MINVERDEFAULTPRERELEASEIDENTIFIERS || 'preview.0' }}'
+          reset_benchmark_thresholds='${{ env.RESET_BENCHMARK_THRESHOLDS || 'false' }}'
           skip_push='false'
 
           if [[ '${{ github.event_name }}' == 'pull_request' ]] ||
