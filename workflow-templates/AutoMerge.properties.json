@@ -1,0 +1,13 @@
+{
+    "name": "AutoMerge",
+    "description": "Automatically enables auto-merge (rebase) on Dependabot PRs once all required status checks pass. Remove the actor filter to auto-merge all PRs.",
+    "categories": [
+        "CI/CD",
+        "DevOps",
+        "Automation"
+    ],
+    "file-patterns": [
+        ".github/workflows/AutoMerge.yaml",
+        ".github/workflows/AutoMerge.yml"
+    ]
+}
