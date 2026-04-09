@@ -42,10 +42,11 @@ concurrency:
 env:
   # The value of all *_PROJECTS variables must be specified as a string containing a JSON array of strings - path(s) to the project(s).
   # NOTE the yaml folding indicator `>-`. It allows to enter single value (scalar, array, object, long string) values on multiple
-  # text lines with no need for escaping, which might be more readable, and writable. Do not indent the text of the value, it should start at the same column as the variable name. E.g.
+  # text lines with no need for escaping, which might be more readable, and writable. Do not indent the text of the value, it
+  # should start at the same column as the opening square bracket. E.g.
   # BUILD_PROJECTS: >-
   #   [
-  #   "src/Project/Project.slnx"
+  #   "src/Project/Project.slnx"  # no indentation for the text of the value, it should start at the same column as the opening square bracket
   #   ]
 
   # If not specified or empty, no actual building will be run (e.g. template projects).
